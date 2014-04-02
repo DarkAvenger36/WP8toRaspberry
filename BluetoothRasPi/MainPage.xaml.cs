@@ -12,6 +12,7 @@ using Windows.Networking.Proximity;
 using Windows.Networking.Sockets;
 using Windows.Storage.Streams;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace BluetoothRasPi
 {
@@ -57,7 +58,6 @@ namespace BluetoothRasPi
                 dataWriter = new DataWriter(socket.OutputStream);
                 ConnectBtn.Content = "Connected";
                 ConnectBtn.IsEnabled = false;
-                //DoSomethingUseful(socket);
             }
         }
         private async void AppToDevice2()
@@ -95,10 +95,11 @@ namespace BluetoothRasPi
         public async Task<uint> SendCommand(string command)
         {
             uint sentCommandSize = 0;
+            string cmd ;
             if (dataWriter != null)
             {
                 uint commandSize = dataWriter.MeasureString(command);
-                dataWriter.WriteByte((byte)commandSize);
+                //dataWriter.WriteByte((byte)commandSize);
                 sentCommandSize = dataWriter.WriteString(command);
                 await dataWriter.StoreAsync();
             }
