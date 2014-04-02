@@ -10,12 +10,15 @@ using Microsoft.Phone.Shell;
 using BluetoothRasPi.Resources;
 using Windows.Networking.Proximity;
 using Windows.Networking.Sockets;
+using Windows.Storage.Streams;
+using System.Threading.Tasks;
 
 namespace BluetoothRasPi
 {
     public partial class MainPage : PhoneApplicationPage
     {
         private ConnectionManager connectionManager = null;
+        private DataWriter dataWriter;
         // Costruttore
         public MainPage()
         {
@@ -51,7 +54,7 @@ namespace BluetoothRasPi
                 // In this example, the second parameter of the call to ConnectAsync() is the RFCOMM port number, and can range 
                 // in value from 1 to 30.
                 await socket.ConnectAsync(selectedDevice.HostName, "5");
-                //connectionManager.Connect(selectedDevice.HostName);
+                dataWriter = new DataWriter(socket.OutputStream);
                 ConnectBtn.Content = "Connected";
                 ConnectBtn.IsEnabled = false;
                 //DoSomethingUseful(socket);
@@ -86,7 +89,20 @@ namespace BluetoothRasPi
         private void SendData_Click(object sender, RoutedEventArgs e)
         {
             string command = "Hello world";
+            SendCommand(command);
+        }
 
+        public async Task<uint> SendCommand(string command)
+        {
+            uint sentCommandSize = 0;
+            if (dataWriter != null)
+            {
+                uint commandSize = dataWriter.MeasureString(command);
+                dataWriter.WriteByte((byte)commandSize);
+                sentCommandSize = dataWriter.WriteString(command);
+                await dataWriter.StoreAsync();
+            }
+            return sentCommandSize;
         }
 
         // Codice di esempio per la realizzazione di una ApplicationBar localizzata
