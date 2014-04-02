@@ -32,19 +32,54 @@ namespace BluetoothRasPi
         private async void AppToDevice()
         {
             ConnectBtn.Content = "Connecting...";
+            // Configure PeerFinder to search for all paired devices.
             PeerFinder.AlternateIdentities["Bluetooth:Paired"] = "";
-
             var pairedDevices = await PeerFinder.FindAllPeersAsync();
 
             if (pairedDevices.Count == 0)
             {
-                System.Diagnostics.Debug.WriteLine("No paired devices found");
+                System.Diagnostics.Debug.WriteLine("No paired devices were found.");
             }
             else
             {
+                // Select a paired device. In this example, just pick the first one.
                 PeerInformation selectedDevice = pairedDevices[0];
-                connectionManager.Connect(selectedDevice.HostName);
+                // Attempt a connection
+                StreamSocket socket = new StreamSocket();
+                // Make sure ID_CAP_NETWORKING is enabled in your WMAppManifest.xml, or the next 
+                // line will throw an Access Denied exception.
+                // In this example, the second parameter of the call to ConnectAsync() is the RFCOMM port number, and can range 
+                // in value from 1 to 30.
+                await socket.ConnectAsync(selectedDevice.HostName, "5");
+                //connectionManager.Connect(selectedDevice.HostName);
                 ConnectBtn.Content = "Connected";
+                ConnectBtn.IsEnabled = false;
+                //DoSomethingUseful(socket);
+            }
+        }
+        private async void AppToDevice2()
+        {
+            ConnectBtn.Content = "Connecting...";
+            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = "";
+            var pairedDevices = await PeerFinder.FindAllPeersAsync();
+
+            if (pairedDevices.Count == 0)
+            {
+                System.Diagnostics.Debug.WriteLine("No paired devices were found.");
+            }
+            else
+            {
+                foreach (var pairedDevice in pairedDevices)
+                {
+                    if (pairedDevice.DisplayName == "raspberrypi-0")
+                    {
+                        connectionManager.Connect(pairedDevice.HostName);
+                        ConnectBtn.Content = "Connected";
+                        //DeviceName.IsReadOnly = true;
+                        ConnectBtn.IsEnabled = false;
+                        continue;
+                    }
+                }
             }
         }
 
