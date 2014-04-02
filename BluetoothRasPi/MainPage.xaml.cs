@@ -88,7 +88,7 @@ namespace BluetoothRasPi
 
         private void SendData_Click(object sender, RoutedEventArgs e)
         {
-            string command = "Hello world";
+            string command = "0";
             SendCommand(command);
         }
 
@@ -103,6 +103,30 @@ namespace BluetoothRasPi
                 await dataWriter.StoreAsync();
             }
             return sentCommandSize;
+        }
+
+        private void Button_LEFT_Click(object sender, RoutedEventArgs e)
+        {
+            string command = "4";
+            SendCommand(command);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string command = "8";
+            SendCommand(command);
+        }
+
+        private void Button_RIGHT_Click(object sender, RoutedEventArgs e)
+        {
+            string command = "6";
+            SendCommand(command);
+        }
+
+        private void Button_BACK_Click(object sender, RoutedEventArgs e)
+        {
+            string command = "2";
+            SendCommand(command);
         }
 
         // Codice di esempio per la realizzazione di una ApplicationBar localizzata

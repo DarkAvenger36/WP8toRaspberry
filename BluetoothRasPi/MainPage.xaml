@@ -47,9 +47,13 @@
 
         <!--ContentPanel - inserire ulteriore contenuto qui-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            
+
             <Button x:Name="ConnectBtn" Content="Connect" Height="80" Width="auto"  VerticalAlignment="Top" Click="ConnectBtn_Click"/>
-            <Button x:Name="SendData" Content="Send data" Height="80" Width="auto" Click="SendData_Click" />
+            <Button x:Name="SendData" Content="STOP" Height="80" Width="auto" Click="SendData_Click" Margin="164,264,148,263" />
+            <Button x:Name="Button_NEXT" Content="NEXT" HorizontalAlignment="Left" Height="80" Margin="164,139,0,0" VerticalAlignment="Top" Width="144" Click="Button_Click"/>
+            <Button x:Name="Button_RIGHT" Content="RIGHT" HorizontalAlignment="Left" Height="80" Margin="313,264,0,0" VerticalAlignment="Top" Width="143" Click="Button_RIGHT_Click"/>
+            <Button x:Name="Button_LEFT" Content="LEFT" HorizontalAlignment="Left" Height="80" Margin="10,264,0,0" VerticalAlignment="Top" Width="143" Click="Button_LEFT_Click"/>
+            <Button x:Name="Button_BACK" Content="BACK" HorizontalAlignment="Left" Height="80" Margin="165,376,0,0" VerticalAlignment="Top" Width="143" Click="Button_BACK_Click"/>
         </Grid>
 
         <!--Rimuovere il commento per vedere la griglia di allineamento che consenta di verificare che i controlli siano
