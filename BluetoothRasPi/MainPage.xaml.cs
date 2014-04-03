@@ -18,13 +18,13 @@ namespace BluetoothRasPi
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        private ConnectionManager connectionManager = null;
+        //private ConnectionManager connectionManager = null;
         private DataWriter dataWriter;
         // Costruttore
         public MainPage()
         {
             InitializeComponent();
-            connectionManager = new ConnectionManager();
+            //connectionManager = new ConnectionManager();
         }
 
         private void ConnectBtn_Click(object sender, RoutedEventArgs e)
@@ -60,31 +60,7 @@ namespace BluetoothRasPi
                 ConnectBtn.IsEnabled = false;
             }
         }
-        private async void AppToDevice2()
-        {
-            ConnectBtn.Content = "Connecting...";
-            PeerFinder.AlternateIdentities["Bluetooth:Paired"] = "";
-            var pairedDevices = await PeerFinder.FindAllPeersAsync();
 
-            if (pairedDevices.Count == 0)
-            {
-                System.Diagnostics.Debug.WriteLine("No paired devices were found.");
-            }
-            else
-            {
-                foreach (var pairedDevice in pairedDevices)
-                {
-                    if (pairedDevice.DisplayName == "raspberrypi-0")
-                    {
-                        connectionManager.Connect(pairedDevice.HostName);
-                        ConnectBtn.Content = "Connected";
-                        //DeviceName.IsReadOnly = true;
-                        ConnectBtn.IsEnabled = false;
-                        continue;
-                    }
-                }
-            }
-        }
 
         private void SendData_Click(object sender, RoutedEventArgs e)
         {
@@ -106,44 +82,14 @@ namespace BluetoothRasPi
             return sentCommandSize;
         }
 
-        private void Button_LEFT_Click(object sender, RoutedEventArgs e)
+
+
+
+        private void ThumbStick_OnNewPosition(object sender, string e)
         {
-            string command = "4";
-            SendCommand(command);
+            System.Diagnostics.Debug.WriteLine(e);
+            SendCommand(e);
+            System.Threading.Thread.Sleep(150);
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            string command = "8";
-            SendCommand(command);
-        }
-
-        private void Button_RIGHT_Click(object sender, RoutedEventArgs e)
-        {
-            string command = "6";
-            SendCommand(command);
-        }
-
-        private void Button_BACK_Click(object sender, RoutedEventArgs e)
-        {
-            string command = "2";
-            SendCommand(command);
-        }
-
-        // Codice di esempio per la realizzazione di una ApplicationBar localizzata
-        //private void BuildLocalizedApplicationBar()
-        //{
-        //    // Imposta la barra delle applicazioni della pagina su una nuova istanza di ApplicationBar
-        //    ApplicationBar = nuova ApplicationBar();
-
-        //    // Crea un nuovo pulsante e imposta il valore del testo sulla stringa localizzata da AppResources.
-        //    ApplicationBarIconButton appBarButton = new ApplicationBarIconButton(new Uri("/Assets/AppBar/appbar.add.rest.png", UriKind.Relative));
-        //    appBarButton.Text = AppResources.AppBarButtonText;
-        //    ApplicationBar.Buttons.Add(appBarButton);
-
-        //    // Crea una nuova voce di menu con la stringa localizzata da AppResources.
-        //    ApplicationBarMenuItem appBarMenuItem = new ApplicationBarMenuItem(AppResources.AppBarMenuItemText);
-        //    ApplicationBar.MenuItems.Add(appBarMenuItem);
-        //}
     }
 }
