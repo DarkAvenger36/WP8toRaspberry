@@ -20,6 +20,10 @@ namespace BluetoothRasPi
     {
         //private ConnectionManager connectionManager = null;
         private DataWriter dataWriter;
+
+        StreamSocket _socket;
+        private bool _isConnected = false;
+
         // Costruttore
         public MainPage()
         {
@@ -29,11 +33,21 @@ namespace BluetoothRasPi
 
         private void ConnectBtn_Click(object sender, RoutedEventArgs e)
         {
-            AppToDevice();
+            TryConnect();
         }
 
 
-        private async void AppToDevice()
+        private void ThumbStick_OnNewPosition(object sender, string e)
+        {
+            System.Diagnostics.Debug.WriteLine(e);
+            if (_isConnected)
+            {
+                Write(e);
+            }
+        }
+
+
+        private async void TryConnect()
         {
             ConnectBtn.Content = "Connecting...";
             // Configure PeerFinder to search for all paired devices.
@@ -46,50 +60,29 @@ namespace BluetoothRasPi
             }
             else
             {
-                // Select a paired device. In this example, just pick the first one.
                 PeerInformation selectedDevice = pairedDevices[0];
-                // Attempt a connection
-                StreamSocket socket = new StreamSocket();
-                // Make sure ID_CAP_NETWORKING is enabled in your WMAppManifest.xml, or the next 
-                // line will throw an Access Denied exception.
-                // In this example, the second parameter of the call to ConnectAsync() is the RFCOMM port number, and can range 
-                // in value from 1 to 30.
-                await socket.ConnectAsync(selectedDevice.HostName, "5");
-                dataWriter = new DataWriter(socket.OutputStream);
+                _socket = new StreamSocket();
+                await _socket.ConnectAsync(selectedDevice.HostName, "5");
+                _isConnected = true;
                 ConnectBtn.Content = "Connected";
                 ConnectBtn.IsEnabled = false;
             }
         }
 
-
-        private void SendData_Click(object sender, RoutedEventArgs e)
+        private async void Write(string str)
         {
-            string command = "0";
-            SendCommand(command);
+            System.Diagnostics.Debug.WriteLine("sto scrivendo " + str);
+            var dataBuffer = GetBufferFromByteArray(Encoding.UTF8.GetBytes(str));
+            await _socket.OutputStream.WriteAsync(dataBuffer);
         }
 
-        public async Task<uint> SendCommand(string command)
+        private IBuffer GetBufferFromByteArray(byte[] package)
         {
-            uint sentCommandSize = 0;
-            string cmd ;
-            if (dataWriter != null)
+            using (var dw = new DataWriter())
             {
-                uint commandSize = dataWriter.MeasureString(command);
-                //dataWriter.WriteByte((byte)commandSize);
-                sentCommandSize = dataWriter.WriteString(command);
-                await dataWriter.StoreAsync();
+                dw.WriteBytes(package);
+                return dw.DetachBuffer();
             }
-            return sentCommandSize;
-        }
-
-
-
-
-        private void ThumbStick_OnNewPosition(object sender, string e)
-        {
-            System.Diagnostics.Debug.WriteLine(e);
-            SendCommand(e);
-            System.Threading.Thread.Sleep(150);
         }
     }
 }
